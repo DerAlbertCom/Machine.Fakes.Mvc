@@ -9,9 +9,9 @@ namespace Machine.Fakes
 {
     public class FakeRazorView : IView
     {
-        PropertyInfo _internalDisplayModeProviderPropertyInfo;
-        MethodInfo _protectedRenderView;
-        readonly RazorView _razorView;
+        readonly RazorView razorView;
+        PropertyInfo internalDisplayModeProviderPropertyInfo;
+        MethodInfo protectedRenderView;
 
         public FakeRazorView(ControllerContext controllerContext,
                              string viewPath,
@@ -22,15 +22,6 @@ namespace Machine.Fakes
         {
         }
 
-        void Init()
-        {
-            _internalDisplayModeProviderPropertyInfo = typeof (RazorView).GetProperty("DisplayModeProvider",
-                                                                                      BindingFlags.NonPublic |
-                                                                                      BindingFlags.Instance);
-            _protectedRenderView = typeof (RazorView).GetMethod("RenderView",
-                                                                BindingFlags.NonPublic | BindingFlags.Instance);
-        }
-
         public FakeRazorView(ControllerContext controllerContext,
                              string viewPath,
                              string layoutPath,
@@ -38,23 +29,28 @@ namespace Machine.Fakes
                              IEnumerable<string> viewStartFileExtensions,
                              IViewPageActivator viewPageActivator)
         {
-            _razorView = new RazorView(controllerContext, viewPath, layoutPath, runViewStartPages,
+            razorView = new RazorView(controllerContext, viewPath, layoutPath, runViewStartPages,
                                        viewStartFileExtensions, viewPageActivator);
             Init();
         }
 
         internal DisplayModeProvider DisplayModeProvider
         {
-            get { return (DisplayModeProvider) _internalDisplayModeProviderPropertyInfo.GetValue(_razorView, null); }
-            set { _internalDisplayModeProviderPropertyInfo.SetValue(_razorView, value, null); }
+            get { return (DisplayModeProvider) internalDisplayModeProviderPropertyInfo.GetValue(razorView, null); }
+            set { internalDisplayModeProviderPropertyInfo.SetValue(razorView, value, null); }
         }
 
 
         public void Render(ViewContext viewContext, TextWriter writer)
         {
-            System.Web.Compilation.BuildManager.GetCompiledType(_razorView.ViewPath);
-            _razorView.Render(viewContext,writer);
-//            _protectedRenderView.Invoke(_razorView, new object[] {viewContext, writer});
+            return;
+        }
+
+        void Init()
+        {
+            internalDisplayModeProviderPropertyInfo = typeof (RazorView).GetProperty("DisplayModeProvider",
+                                                                                      BindingFlags.NonPublic |
+                                                                                      BindingFlags.Instance);
         }
     }
 }

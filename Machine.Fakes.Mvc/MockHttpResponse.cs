@@ -6,29 +6,28 @@ namespace Machine.Fakes
 {
     public class MockHttpResponse
     {
-        readonly IFakeAccessor _accessor;
-        readonly HttpResponseBase _response;
+        readonly IFakeAccessor fakes;
+        readonly HttpResponseBase response;
 
-        public MockHttpResponse(IFakeAccessor accessor)
+        public MockHttpResponse(IFakeAccessor fakes)
         {
-            _accessor = accessor;
-            _response = accessor.An<HttpResponseBase>();
+            this.fakes = fakes;
+            response = fakes.An<HttpResponseBase>();
             MockIt();
+        }
+
+        public HttpResponseBase Response
+        {
+            get { return response; }
         }
 
         void MockIt()
         {
             var headers = new NameValueCollection();
-            _response.WhenToldTo(c => c.Headers).Return(headers);
+            response.WhenToldTo(c => c.Headers).Return(headers);
 
             var cookies = new HttpCookieCollection();
-            _response.WhenToldTo(c => c.Cookies).Return(cookies);
-
-        }
-
-        public HttpResponseBase Response
-        {
-            get { return _response; }
+            response.WhenToldTo(c => c.Cookies).Return(cookies);
         }
     }
 }

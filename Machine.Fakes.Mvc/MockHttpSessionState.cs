@@ -1,23 +1,24 @@
 using System;
+using System.Collections.Generic;
 using System.Web;
-using System.Web.SessionState;
 
 namespace Machine.Fakes
 {
     public class MockHttpSessionState
     {
-        private readonly IFakeAccessor _accessor;
-        private readonly HttpSessionStateBase _session;
+        readonly IFakeAccessor fakes;
+        readonly FakeHttpSessionStateBase session;
 
-        public MockHttpSessionState(IFakeAccessor accessor)
+        public MockHttpSessionState(IFakeAccessor fakes)
         {
-            _accessor = accessor;
-            _session = new FakeHttpSessionState();
+            this.fakes = fakes;
+            session = fakes.An<FakeHttpSessionStateBase>();
+            session.WhenToldTo(s=>s.SyncRoot).Return(new object());
         }
 
         public HttpSessionStateBase Session
         {
-            get { return _session; }
+            get { return session; }
         }
     }
 }

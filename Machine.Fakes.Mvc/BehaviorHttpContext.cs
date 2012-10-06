@@ -7,16 +7,21 @@ namespace Machine.Fakes
     {
         static volatile int _useCounter;
 
-        OnEstablish _context = accessor =>
-                               {
-                                   if (_useCounter == 0)
-                                       _mock = new MockHttpContext(accessor);
-                                   _useCounter++;
-                               };
-
-        OnCleanup _cleanup = subject => _useCounter--;
-
         static MockHttpContext _mock;
+
+        OnCleanup cleanup = subject =>
+        {
+            _useCounter--;
+            if (_useCounter == 0)
+                _mock = null;
+        };
+
+        OnEstablish context = accessor =>
+        {
+            if (_mock == null)
+                _mock = new MockHttpContext(accessor);
+            _useCounter++;
+        };
 
         public HttpContextBase HttpContext
         {
